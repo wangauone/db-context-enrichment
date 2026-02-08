@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/wangauone/db-context-enrichment/compare/gemini-extension-v0.3.1...gemini-extension-v0.3.2) (2026-02-08)
+
+
+### Bug Fixes
+
+* include GEMINI.md in binary distribution and update context path ([4dc60b6](https://github.com/wangauone/db-context-enrichment/commit/4dc60b61f6d520b467f6e06f5a8793707782b54d))
+
 ## [0.3.1](https://github.com/wangauone/db-context-enrichment/compare/gemini-extension-v0.3.0...gemini-extension-v0.3.1) (2026-02-08)
 
 
