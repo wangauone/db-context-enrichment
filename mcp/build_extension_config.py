@@ -27,6 +27,16 @@ def main():
         server_config["command"] = binary_name
         server_config["args"] = []
 
+    # Inject mcp-toolbox configuration
+    toolbox_binary_name = "${extensionPath}/toolbox.exe" if args.platform == "win32" else "${extensionPath}/toolbox"
+    if "mcpServers" not in config:
+        config["mcpServers"] = {}
+    
+    config["mcpServers"]["mcp_toolbox"] = {
+        "command": toolbox_binary_name,
+        "args": ["--stdio"]
+    }
+
     # Update contextFileName to be relative to the binary (flat structure)
     if "contextFileName" in config:
         config["contextFileName"] = "GEMINI.md"

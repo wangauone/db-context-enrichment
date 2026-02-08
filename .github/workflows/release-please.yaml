@@ -34,12 +34,18 @@ jobs:
           - os: ubuntu-latest
             platform_name: linux
             arch_name: x64
+            toolbox_path_segment: linux/amd64
+            toolbox_binary_suffix: ""
           - os: macos-latest
             platform_name: darwin
             arch_name: arm64
+            toolbox_path_segment: darwin/arm64
+            toolbox_binary_suffix: ""
           - os: windows-latest
             platform_name: win32
             arch_name: x64
+            toolbox_path_segment: windows/amd64
+            toolbox_binary_suffix: ".exe"
 
     steps:
       - uses: actions/checkout@v4
@@ -71,6 +77,13 @@ jobs:
           else
             mv dist/db-context-enrichment dist/package/
           fi
+
+          # Download genai-toolbox
+          TOOLBOX_VERSION=$(cat ../toolbox_version.txt)
+          DOWNLOAD_URL="https://storage.googleapis.com/genai-toolbox/geminicli/v${TOOLBOX_VERSION}/${{ matrix.toolbox_path_segment }}/toolbox${{ matrix.toolbox_binary_suffix }}"
+          echo "Downloading toolbox from $DOWNLOAD_URL"
+          curl -L --fail -o dist/package/toolbox${{ matrix.toolbox_binary_suffix }} "$DOWNLOAD_URL"
+          chmod +x dist/package/toolbox${{ matrix.toolbox_binary_suffix }}
           
           # Generate config
           uv run python build_extension_config.py --version "${{ needs.release-please.outputs.tag_name }}" --platform "${{ matrix.platform_name }}"
