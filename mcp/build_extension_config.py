@@ -20,7 +20,7 @@ def main():
     config["version"] = args.version
 
     # Determine binary name
-    binary_name = "db-context-enrichment.exe" if args.platform == "win32" else "./db-context-enrichment"
+    binary_name = "${extensionPath}/db-context-enrichment.exe" if args.platform == "win32" else "${extensionPath}/db-context-enrichment"
 
     # Update mcpServers to use binary
     for server_name, server_config in config.get("mcpServers", {}).items():
