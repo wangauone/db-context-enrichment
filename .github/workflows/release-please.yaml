@@ -1,0 +1,100 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+name: release-please
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build-and-deploy:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    name: Build and Deploy
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform_name: linux
+            arch_name: x64
+          - os: macos-latest
+            platform_name: darwin
+            arch_name: arm64
+          - os: windows-latest
+            platform_name: win32
+            arch_name: x64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install dependencies
+        working-directory: mcp
+        run: uv sync --frozen
+
+      - name: Build binary with PyInstaller
+        working-directory: mcp
+        run: uv run pyinstaller pyinstaller.spec
+
+      - name: Prepare distribution
+        working-directory: mcp
+        shell: bash
+        run: |
+          # Create a directory for distribution
+          mkdir -p dist/package
+          
+          # Move binary to package dir
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            mv dist/db-context-enrichment.exe dist/package/
+          else
+            mv dist/db-context-enrichment dist/package/
+          fi
+          
+          # Generate config
+          uv run python build_extension_config.py --version "${{ needs.release-please.outputs.tag_name }}" --platform "${{ matrix.platform_name }}"
+          mv gemini-extension.json dist/package/
+          
+          # Copy context file
+          cp GEMINI.md dist/package/
+
+      - name: Archive artifacts (Unix)
+        if: runner.os != 'Windows'
+        working-directory: mcp/dist/package
+        run: |
+          tar -czf ../../../${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.tar.gz *
+
+      - name: Archive artifacts (Windows)
+        if: runner.os == 'Windows'
+        working-directory: mcp/dist/package
+        run: |
+          Compress-Archive -Path * -DestinationPath ../../../${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.zip
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.release-please.outputs.tag_name }}
+          files: |
+            ${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.tar.gz
+            ${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.zip
