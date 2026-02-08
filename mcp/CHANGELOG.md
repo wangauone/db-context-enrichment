@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/wangauone/db-context-enrichment/compare/v0.3.2...v0.3.3) (2026-02-08)
+
+
+### Bug Fixes
+
+* upgrade pyinstaller to 6.18.0 to resolve Python shared library loading issues ([1bf5598](https://github.com/wangauone/db-context-enrichment/commit/1bf55982a6c6f3ee762b50dc0f5c98e696169d59))
+
 ## [0.3.2](https://github.com/wangauone/db-context-enrichment/compare/v0.3.1...v0.3.2) (2026-02-08)
 
 
