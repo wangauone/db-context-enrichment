@@ -58,25 +58,36 @@ jobs:
         working-directory: mcp
         run: uv run pyinstaller pyinstaller.spec
 
-      - name: Generate release configuration
+      - name: Prepare distribution
         working-directory: mcp
         shell: bash
         run: |
+          # Create a directory for distribution
+          mkdir -p dist/package
+          
+          # Move binary to package dir
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            mv dist/db-context-enrichment.exe dist/package/
+          else
+            mv dist/db-context-enrichment dist/package/
+          fi
+          
+          # Generate config
           uv run python build_extension_config.py --version "${{ needs.release-please.outputs.tag_name }}" --platform "${{ matrix.platform_name }}"
-          # Move config to dist for packaging
-          mv gemini-extension.json dist/db-context-enrichment/gemini-extension.json
-          # Copy GEMINI.md for context
-          cp GEMINI.md dist/db-context-enrichment/GEMINI.md
+          mv gemini-extension.json dist/package/
+          
+          # Copy context file
+          cp GEMINI.md dist/package/
 
       - name: Archive artifacts (Unix)
         if: runner.os != 'Windows'
-        working-directory: mcp/dist/db-context-enrichment
+        working-directory: mcp/dist/package
         run: |
           tar -czf ../../../${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.tar.gz *
 
       - name: Archive artifacts (Windows)
         if: runner.os == 'Windows'
-        working-directory: mcp/dist/db-context-enrichment
+        working-directory: mcp/dist/package
         run: |
           Compress-Archive -Path * -DestinationPath ../../../${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.zip
 
