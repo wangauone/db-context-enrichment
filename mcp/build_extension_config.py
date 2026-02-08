@@ -27,6 +27,10 @@ def main():
         server_config["command"] = binary_name
         server_config["args"] = []
 
+    # Update contextFileName to be relative to the binary (flat structure)
+    if "contextFileName" in config:
+        config["contextFileName"] = "GEMINI.md"
+
     with open("gemini-extension.json", "w") as f:
         json.dump(config, f, indent=2)
     

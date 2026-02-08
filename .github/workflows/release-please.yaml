@@ -65,6 +65,8 @@ jobs:
           uv run python build_extension_config.py --version "${{ needs.release-please.outputs.tag_name }}" --platform "${{ matrix.platform_name }}"
           # Move config to dist for packaging
           mv gemini-extension.json dist/db-context-enrichment/gemini-extension.json
+          # Copy GEMINI.md for context
+          cp GEMINI.md dist/db-context-enrichment/GEMINI.md
 
       - name: Archive artifacts (Unix)
         if: runner.os != 'Windows'
