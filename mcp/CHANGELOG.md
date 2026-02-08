@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/wangauone/db-context-enrichment/compare/v0.3.0...v0.3.1) (2026-02-08)
+
+
+### Bug Fixes
+
+* update release workflow and permissions to enable binary build on release ([0886ce4](https://github.com/wangauone/db-context-enrichment/commit/0886ce4ef46a99af033cf574406ba793a9882a7c))
+
 ## [0.3.0](https://github.com/wangauone/db-context-enrichment/compare/v0.2.1...v0.3.0) (2026-02-08)
 
 
