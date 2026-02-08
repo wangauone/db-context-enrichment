@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/wangauone/db-context-enrichment/compare/gemini-extension-v0.3.4...gemini-extension-v0.3.5) (2026-02-08)
+
+
+### Bug Fixes
+
+* update gemini-extension.json generation to use ([2898c82](https://github.com/wangauone/db-context-enrichment/commit/2898c82fa83345395d52e45b735087ebfe7f6553))
+
 ## [0.3.4](https://github.com/wangauone/db-context-enrichment/compare/gemini-extension-v0.3.3...gemini-extension-v0.3.4) (2026-02-08)
 
 
