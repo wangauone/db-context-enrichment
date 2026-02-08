@@ -26,3 +26,8 @@ packages = ["template", "facet", "common", "model", "prompts"]
 [[tool.uv.index]]
 url = "https://pypi.org/simple"
 default = true
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.18.0",
+]

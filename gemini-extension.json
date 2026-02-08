@@ -6,11 +6,8 @@
     "mcp_db_context_enrichment": {
       "command": "uv",
       "args": [
-        "tool",
         "run",
-        "--from",
-        "${extensionPath}${/}mcp${/}dist${/}db_context_enrichment-0.2.1-py3-none-any.whl",
-        "db-context-enrichment"
+        "mcp/main.py"
       ]
     }
   }
