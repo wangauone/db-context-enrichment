@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/wangauone/db-context-enrichment/compare/gemini-extension-v0.3.3...gemini-extension-v0.3.4) (2026-02-08)
+
+
+### Bug Fixes
+
+* switch to onefile bundle to resolve python dylib dependency issues ([eef3d12](https://github.com/wangauone/db-context-enrichment/commit/eef3d12e89813c2902af4760edd43c0030240134))
+
 ## [0.3.3](https://github.com/wangauone/db-context-enrichment/compare/gemini-extension-v0.3.2...gemini-extension-v0.3.3) (2026-02-08)
 
 
