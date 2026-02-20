@@ -2,15 +2,18 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 name: release-please
 
 jobs:
   release-please:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -23,10 +26,10 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  build-and-deploy:
+  build-artifacts:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
-    name: Build and Deploy
+    if: ${{ needs.release-please.outputs.release_created || github.event_name == 'workflow_dispatch' }}
+    name: Build Binary
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -46,6 +49,9 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "mcp/uv.lock"
 
       - name: Set up Python
         run: uv python install
@@ -62,21 +68,16 @@ jobs:
         working-directory: mcp
         shell: bash
         run: |
-          # Create a directory for distribution
           mkdir -p dist/package
           
-          # Move binary to package dir
           if [ "${{ runner.os }}" == "Windows" ]; then
             mv dist/db-context-enrichment.exe dist/package/
           else
             mv dist/db-context-enrichment dist/package/
           fi
           
-          # Generate config
-          uv run python ../.github/scripts/build_extension_config.py --version "${{ needs.release-please.outputs.tag_name }}" --platform "${{ matrix.platform_name }}"
+          uv run python ../.github/scripts/build_extension_config.py --version "${{ needs.release-please.outputs.tag_name || 'manual' }}" --platform "${{ matrix.platform_name }}"
           mv gemini-extension.json dist/package/
-          
-          # Copy context file
           cp GEMINI.md dist/package/
 
       - name: Archive artifacts (Unix)
@@ -91,10 +92,32 @@ jobs:
         run: |
           Compress-Archive -Path * -DestinationPath ../../../${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.zip
 
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ needs.release-please.outputs.tag_name }}
-          files: |
+          name: binary-${{ matrix.platform_name }}-${{ matrix.arch_name }}
+          path: |
             ${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.tar.gz
             ${{ matrix.platform_name }}.${{ matrix.arch_name }}.db-context-enrichment.zip
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-release:
+    needs: [release-please, build-artifacts]
+    if: ${{ needs.release-please.outputs.release_created }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          pattern: binary-*
+          merge-multiple: true
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.release-please.outputs.tag_name }}
+          files: release-assets/*
