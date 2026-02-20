@@ -73,7 +73,7 @@ jobs:
           fi
           
           # Generate config
-          uv run python build_extension_config.py --version "${{ needs.release-please.outputs.tag_name }}" --platform "${{ matrix.platform_name }}"
+          uv run python ../.github/scripts/build_extension_config.py --version "${{ needs.release-please.outputs.tag_name }}" --platform "${{ matrix.platform_name }}"
           mv gemini-extension.json dist/package/
           
           # Copy context file
