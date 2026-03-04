@@ -58,6 +58,7 @@ jobs:
       # Extract the targeted genai-toolbox version from pyproject.toml
       - name: Get Toolbox Version
         working-directory: mcp
+        shell: bash
         run: |
           TOOLBOX_VERSION=$(grep -o '^toolbox_version = "[^"]*"' pyproject.toml | cut -d '"' -f 2)
           echo "Found toolbox version: ${TOOLBOX_VERSION}"
@@ -66,6 +67,7 @@ jobs:
       # Download the pre-compiled genai-toolbox binary for the target platform
       - name: Download genai-toolbox binary
         working-directory: mcp
+        shell: bash
         run: |
           DOWNLOAD_URL="https://storage.googleapis.com/genai-toolbox/v${{ env.TOOLBOX_VERSION }}/${{ matrix.toolbox_os }}/${{ matrix.toolbox_arch }}/toolbox${{ matrix.toolbox_ext }}"
           echo "Downloading toolbox from: ${DOWNLOAD_URL}"
