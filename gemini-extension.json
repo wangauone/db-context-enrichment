@@ -11,6 +11,12 @@
         "${extensionPath}/mcp",
         "main.py"
       ]
+    },
+    "mcp_toolbox": {
+      "command": "${extensionPath}/mcp/toolbox",
+      "args": [
+        "--stdio"
+      ]
     }
   }
 }
