@@ -90,6 +90,7 @@ jobs:
           mkdir -p staging
           
           cp -r skills/ staging/skills/
+          cp -r commands/ staging/commands/
           mkdir -p staging/skills/database-connectivity/scripts/
 
           cp -r commands/ staging/commands/
