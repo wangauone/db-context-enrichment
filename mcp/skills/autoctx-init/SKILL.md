@@ -24,18 +24,21 @@ To initialize the environment, perform the step-by-step workflow below. You must
 Follow these steps sequentially to complete the initialization:
 
 1.  **Confirm Working Directory:** Explicitly state the current working directory to the user. Explain that the initialization (creating `tools.yaml`, `state.md`, etc.) will occur in this directory. Ask them to confirm if this is the correct location, or if they would prefer to target a different folder before proceeding. Proceed only after obtaining their confirmation.
-2.  **Identify Database Type:** Ask the user which target database they want to configure. The supported types are:
+2.  **Check Existing Configuration:** Use your file reading tools to check if a `tools.yaml` file already exists in the approved directory. 
+    - **If it exists:** Inform the user that an existing database configuration was found, and skip directly to **Step 6**.
+    - **If it does NOT exist:** Proceed to **Step 3** to configure a new database connection.
+3.  **Identify Database Type:** Ask the user which target database they want to configure. The supported types are:
     - Cloud SQL Postgres
     - Cloud SQL MySQL
     - AlloyDB Postgres
     - Spanner
-3.  **Collect Database Parameters:** Based on the user's selection, request all **Required Information** as detailed in `references/` folder. Remember to recommend environment variables for passwords.
-4.  **Generate `tools.yaml`:** Select the matching template from the references folder, replace all placeholders with the user's provided values, and write the complete `tools.yaml` file to the approved directory.
-5.  **Create State Tracker:** Use your file management tools to create a `state.md` file in the approved directory. Include a brief header explaining it tracks dynamic experiment state and active Context Set IDs.
-6.  **Initialize Reporting Directory:** Create an empty `reporting_output/` directory in the approved directory to hold all future evaluation logs.
-7.  **Validate Connection:** Execute the validation command specified below to perform a dry-run and ensure the newly generated `tools.yaml` can successfully connect to the database:
+4.  **Collect Database Parameters:** Based on the user's selection, request all **Required Information** as detailed in `references/` folder. Remember to recommend environment variables for passwords.
+5.  **Generate `tools.yaml`:** Select the matching template from the references folder, replace all placeholders with the user's provided values, and write the complete `tools.yaml` file to the approved directory.
+6.  **Create State Tracker:** Use your file management tools to create a `state.md` file in the approved directory. Include a brief header explaining it tracks dynamic experiment state and active Context Set IDs.
+7.  **Initialize Reporting Directory:** Create an empty `reporting_output/` directory in the approved directory to hold all future evaluation logs.
+8.  **Validate Connection:** Execute the validation command specified below to perform a dry-run and ensure the `tools.yaml` can successfully connect to the database (if no data source name is known because the file already existed, try parsing it or ask the user to confirm it works):
     `<skill_dir>/scripts/toolbox --tools-file tools.yaml invoke <data_source_name>-list-schemas`
-8.  **Apply Changes:** Upon successful validation, return a message to the user instructing them to run `/mcp refresh` to apply the database connections.
+9.  **Apply Changes:** Upon successful validation, return a message to the user instructing them to run `/mcp refresh` to apply the database connections.
 
 ## Templates & Reference
 
