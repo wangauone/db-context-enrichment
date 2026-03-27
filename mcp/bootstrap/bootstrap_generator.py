@@ -7,9 +7,9 @@ from common.context_mutator import mutate_context_set, Mutation
 
 async def generate_context(
     output_file_path: str,
-    templates_json: str | None = None,
-    facets_json: str | None = None,
-    sql_dialect: str = "postgresql"
+    sql_dialect: str,
+    template_inputs_json: str | None = None,
+    facet_inputs_json: str | None = None,
 ) -> str:
     """
     Core logic for generating a single unified ContextSet from key information and saving it to a file.
@@ -17,25 +17,25 @@ async def generate_context(
     final_templates = None
     final_facets = None
 
-    if templates_json:
-        res_str = await template_generator.generate_templates(templates_json, sql_dialect)
+    if template_inputs_json:
+        res_str = await template_generator.generate_templates(template_inputs_json, sql_dialect)
         if '"error":' in res_str:
-            return f"Error generating templates: {res_str}"
+            raise RuntimeError(f"Error generating templates: {res_str}")
         try:
             res_dict = json.loads(res_str)
             final_templates = [context.Template(**t) for t in res_dict.get("templates", [])]
         except Exception as e:
-            return f"Error parsing generated templates: {e}"
+            raise ValueError(f"Error parsing generated templates: {e}") from e
 
-    if facets_json:
-        res_str = await facet_generator.generate_facets(facets_json, sql_dialect)
+    if facet_inputs_json:
+        res_str = await facet_generator.generate_facets(facet_inputs_json, sql_dialect)
         if '"error":' in res_str:
-            return f"Error generating facets: {res_str}"
+            raise RuntimeError(f"Error generating facets: {res_str}")
         try:
             res_dict = json.loads(res_str)
             final_facets = [context.Facet(**f) for f in res_dict.get("facets", [])]
         except Exception as e:
-            return f"Error parsing generated facets: {e}"
+            raise ValueError(f"Error parsing generated facets: {e}") from e
 
     mutations: list[Mutation] = []
 
@@ -56,6 +56,7 @@ async def generate_context(
             ))
 
     if not mutations:
-        return "No templates or facets were generated to save."
+        raise ValueError("No templates or facets were generated to save.")
 
-    return mutate_context_set(output_file_path, mutations)
+    mutate_context_set(output_file_path, mutations)
+    return output_file_path

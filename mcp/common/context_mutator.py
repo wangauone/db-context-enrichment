@@ -11,11 +11,11 @@ class Mutation(BaseModel):
     identifier: dict[str, Any] = {}
     value: dict[str, Any] | None = None
 
-def mutate_context_set(file_path: str, mutations: list[Mutation] | str) -> str:
+def mutate_context_set(file_path: str, mutations: list[Mutation]) -> None:
     """
     Internal function to mutate (add, delete, update) elements in an existing ContextSet JSON file.
     
-    The mutations_json is expected to be a list of mutation objects. 
+    The mutations is expected to be a list of Mutation objects. 
     Each object specifies an 'operation', 'type', 'identifier' (to route to the correct item for deletes/updates), and 'value' (for adding/updating), for instance:
     
     [
@@ -47,23 +47,11 @@ def mutate_context_set(file_path: str, mutations: list[Mutation] | str) -> str:
                 raw_data = json.load(f)
             context_set = context.ContextSet.model_validate(raw_data)
         except ValidationError as e:
-            return f"Validation Error loading ContextSet from {file_path}: {e}"
+            raise ValueError(f"Validation Error loading ContextSet from {file_path}: {e}") from e
         except Exception as e:
-            return f"Error reading JSON from {file_path}: {e}"
+            raise RuntimeError(f"Error reading JSON from {file_path}: {e}") from e
 
-    # 2. Parse and validate mutations
-    if isinstance(mutations, str):
-        try:
-            raw_muts = json.loads(mutations)
-            if not isinstance(raw_muts, list):
-                raw_muts = [raw_muts]
-            mutations = [Mutation.model_validate(m) for m in raw_muts]
-        except json.JSONDecodeError as e:
-            return f"Error decoding mutations string: {e}"
-        except ValidationError as e:
-            return f"Validation Error parsing mutation payload: {e}"
-
-    # Model mapping for tracking and validation
+    # 2. Model mapping for tracking and validation
     type_to_model = {
         "template": context.Template,
         "facet": context.Facet,
@@ -100,7 +88,7 @@ def mutate_context_set(file_path: str, mutations: list[Mutation] | str) -> str:
                     new_item = model_class.model_validate(value_data)
                     target_list.append(new_item)
                 except ValidationError as e:
-                    return f"Validation Error on mutation {i} during 'add': {e}"
+                    raise ValueError(f"Validation Error on mutation {i} during 'add': {e}") from e
                     
         elif op == "delete":
             new_list = []
@@ -122,13 +110,12 @@ def mutate_context_set(file_path: str, mutations: list[Mutation] | str) -> str:
                         target_list[idx] = updated_item
                         break # Only update first match
                     except ValidationError as e:
-                        return f"Validation Error on mutation {i} during 'update': {e}"
+                        raise ValueError(f"Validation Error on mutation {i} during 'update': {e}") from e
 
     # 4. Save validated ContextSet
     try:
         os.makedirs(os.path.dirname(os.path.abspath(file_path)), exist_ok=True)
         with open(file_path, "w") as f:
             f.write(context_set.model_dump_json(indent=2, exclude_none=True))
-        return f"Successfully applied mutations to {file_path}"
     except Exception as e:
-        return f"Error saving ContextSet to {file_path}: {e}"
+        raise RuntimeError(f"Error saving ContextSet to {file_path}: {e}") from e

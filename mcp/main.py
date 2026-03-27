@@ -91,8 +91,8 @@ async def generate_facets(
 @mcp.tool
 async def generate_bootstrap_context(
     output_file_path: str,
-    templates_json: str | None = None,
-    facets_json: str | None = None,
+    template_inputs_json: str | None = None,
+    facet_inputs_json: str | None = None,
     sql_dialect: str = "postgresql"
 ) -> str:
     """
@@ -100,17 +100,29 @@ async def generate_bootstrap_context(
 
     Args:
         output_file_path: The absolute path where the JSON ContextSet file should be saved.
-        templates_json: JSON string representing a list of templates.
-                        Example: '[{"question": "...", "sql": "...", "intent": "..."}]'
-        facets_json: JSON string representing a list of facets.
-                     Example: '[{"sql_snippet": "...", "intent": "..."}]'
+        template_inputs_json: A JSON string representing a list of extracted seed information used to generate full templates.
+            Each item in the list should be a dictionary with keys:
+            - "question": The natural language question.
+            - "sql": The corresponding SQL query to answer the question.
+            - "intent": (Optional) A brief description of the intent.
+            
+            Example: 
+            '[{"question": "How many users?", "sql": "SELECT COUNT(*) FROM users", "intent": "Count total users"}]'
+            
+        facet_inputs_json: A JSON string representing a list of extracted seed information used to generate full facets.
+            Each item in the list should be a dictionary with keys:
+            - "intent": A brief description of the facet intent.
+            - "sql_snippet": A specific SQL fragment (such as a filter condition) representing the intent.
+            
+            Example: 
+            '[{"intent": "high price", "sql_snippet": "price > 1000"}]'
         sql_dialect: SQL engine dialect.
         
     Returns:
-        A success message containing the output file path.
+        The absolute file path pointing to the generated and saved ContextSet JSON.
     """
     return await bootstrap_generator.generate_context(
-        output_file_path, templates_json, facets_json, sql_dialect
+        output_file_path, sql_dialect, template_inputs_json, facet_inputs_json
     )
 
 
