@@ -10,6 +10,7 @@ import prompts
 import datetime
 import os
 import json
+from bootstrap import bootstrap_generator
 
 mcp = FastMCP("DB Context Enrichment MCP")
 
@@ -84,6 +85,32 @@ async def generate_facets(
     """
     return await facet_generator.generate_facets(
         facet_inputs_json, sql_dialect
+    )
+
+
+@mcp.tool
+async def generate_bootstrap_context(
+    output_file_path: str,
+    templates_json: str | None = None,
+    facets_json: str | None = None,
+    sql_dialect: str = "postgresql"
+) -> str:
+    """
+    Generates a single unified ContextSet from key information and saves it to a file.
+
+    Args:
+        output_file_path: The absolute path where the JSON ContextSet file should be saved.
+        templates_json: JSON string representing a list of templates.
+                        Example: '[{"question": "...", "sql": "...", "intent": "..."}]'
+        facets_json: JSON string representing a list of facets.
+                     Example: '[{"sql_snippet": "...", "intent": "..."}]'
+        sql_dialect: SQL engine dialect.
+        
+    Returns:
+        A success message containing the output file path.
+    """
+    return await bootstrap_generator.generate_context(
+        output_file_path, templates_json, facets_json, sql_dialect
     )
 
 
