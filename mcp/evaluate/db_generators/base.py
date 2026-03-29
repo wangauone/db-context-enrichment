@@ -68,8 +68,7 @@ class BaseDBConfigGenerator(ABC):
 
         query_context_dict = MessageToDict(
             query_context._pb, 
-            preserving_proto_field_name=True, 
-            including_default_value_fields=False
+            preserving_proto_field_name=True
         )
 
         model_config = {
