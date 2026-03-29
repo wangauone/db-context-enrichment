@@ -101,7 +101,7 @@ jobs:
           curl -L --fail -o "${ARCHIVE}" "${DOWNLOAD_URL}"
           
           if [ "${{ runner.os }}" == "Windows" ]; then
-            unzip "${ARCHIVE}"
+            unzip -o "${ARCHIVE}"
           else
             tar -xzf "${ARCHIVE}"
           fi
