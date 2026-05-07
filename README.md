@@ -2,6 +2,10 @@ This is not an officially supported Google product. This project is not eligible
 
 # DB Context Enrichment Extension
 
+> [!IMPORTANT]
+> **Repository Reorganization**
+> The original Go-based **DB Schema Enricher CLI** has been archived and moved to the [legacy/go-enricher/](legacy/go-enricher/) directory. This repository root is now dedicated to the Python-based **DB Context Enrichment Extension (MCP Server)**.
+
 This project is a Gemini CLI extension that bridges the gap between Large Language Models (LLMs) and structured databases by generating and managing tailored context. This context helps the LLM understand database schema, business logic, and terminology, enabling more accurate Natural Language to SQL generation.
 
 ## Core Concepts
