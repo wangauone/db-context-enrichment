@@ -138,3 +138,9 @@ To develop a new feature and test it with the correct dependencies and full bund
 - The pipeline packages the binary, `LICENSE`, `GEMINI.md`, and dynamically updates `gemini-extension.json` into `.tar.gz` and `.zip` archives.
 - These archives are automatically attached back to the GitHub release as downloadable assets.
 - Users receive the update the next time they install or upgrade the extension via Gemini CLI (`gemini extensions update --all`).
+
+---
+
+## Legacy Tools
+
+The original Go-based **DB Schema Enricher CLI** is still preserved and accessible within the repository for schema comment management. For installation and usage details, please refer to the [legacy/go-enricher](legacy/go-enricher/README.md) directory.
