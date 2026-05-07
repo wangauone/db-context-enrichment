@@ -26,11 +26,11 @@ A command-line tool to enrich your database schema with metadata (primarily colu
     *   Go 1.21 or later installed.
     *   `make` utility.
 
-2.  **Clone the repository:**
+2.  **Clone the repository and navigate to the Go tool directory:**
 
     ```bash
     git clone https://github.com/GoogleCloudPlatform/db-context-enrichment.git
-    cd db-context-enrichment
+    cd db-context-enrichment/legacy/go-enricher
     ```
 
 3.  **Build the binary:**
@@ -38,7 +38,7 @@ A command-line tool to enrich your database schema with metadata (primarily colu
     ```bash
     make build
     ```
-    This will create the `db_schema_enricher` executable in the current directory.
+    This will create the `db_schema_enricher` executable inside the `legacy/go-enricher` directory.
 
 ### Google Cloud Authentication
 
